@@ -21,7 +21,7 @@
     <div style="font-size:11px; opacity:0.75; margin-top:6px;">Encriptação TLS 1.3 • Validação KYC/AML</div>
   </div>
 
-  <div class="scroll-area">
+    <div class="scroll-area">
     <div id="errorBox" class="error-box hidden"></div>
     <div id="otpToast" class="otp-notification hidden">
       <div id="otpToastTitle" style="font-weight:bold; margin-bottom:2px;">📩 Nova Mensagem</div>
@@ -36,20 +36,22 @@
           Protótipo de Monografia • Autor: @akuenda2026
         </p>
       </div>
+
+
       <div class="tabs">
         <button class="tab-btn active" id="btnAuthLogin" onclick="mudarAuthAba('login')">🔐 Entrar</button>
         <button class="tab-btn" id="btnAuthReg" onclick="mudarAuthAba('register')">📝 Abrir Conta</button>
       </div>
-      <div class="section-pad" id="loginForm">
+            <div class="section-pad" id="loginForm">
         <div id="regSuccessBanner" class="success-msg hidden">Conta criada! Entre com as suas credenciais.</div>
         <label>E-mail de Acesso</label>
-        <input type="email" id="loginEmail" value="ana@banco.ao">
+        <input type="email" id="loginEmail" placeholder="Digite o seu e-mail">
         <label>Palavra-passe</label>
-        <input type="password" id="loginPass" value="123">
-        <div class="hint">Conta demo: ana@banco.ao / Senha: 123 (ou crie a sua na aba ao lado).</div>
+        <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
         <button class="action-btn btn-primary" onclick="fazerLogin()">ENTRAR NO APLICATIVO</button>
         <button class="action-btn btn-outline" onclick="zerarSistema()">↻ Reiniciar Base de Dados</button>
       </div>
+
       <div class="section-pad hidden" id="registerForm">
         <label>Nome Completo (Igual ao B.I.)</label>
         <input type="text" id="regName" placeholder="Ex: João Manuel Baptista">
@@ -179,8 +181,7 @@
         <div class="card-title"><span>📄 Extrato de Remessas Digitais</span></div>
         <div id="fullHistoryList"></div>
       </div>
-
-      <div id="viewProfile" class="section-pad hidden">
+            <div id="viewProfile" class="section-pad hidden">
         <div class="card">
           <div class="card-title"><span>👤 Dados do Titular & KYC (BNA)</span><span class="badge-ok">Verificado</span></div>
           <div class="row"><span>Titular:</span> <strong id="profName">---</strong></div>
@@ -189,6 +190,16 @@
           <div class="row"><span>E-mail:</span> <strong id="profEmail">---</strong></div>
           <div class="row"><span>IBAN:</span> <strong id="profIban" style="font-size:10.5px;">---</strong></div>
         </div>
+
+        <div class="card">
+          <div class="card-title"><span>🎓 Informações da Monografia</span></div>
+          <div class="row"><span>Tema:</span> <strong>INTEGRAÇÃO DE SERVIÇOS DE REMESSAS INTERNACIONAIS (WESTERN UNION) EM APLICAÇÕES DE INTERNET BANKING EM ANGOLA</strong></div>
+          <div class="row"><span>Autor:</span> <strong>@akuenda2026</strong></div>
+          <div class="row"><span>Orientador:</span> <strong>DESCONHECIDO</strong></div>
+          <div class="row"><span>Instituição:</span> <strong>UNIVERSIDADE DE LUANDA</strong></div>
+          <div class="row"><span>Ano Académico:</span> <strong>2026/2027</strong></div>
+        </div>
+
         <button class="action-btn btn-outline" style="margin-top:15px;" onclick="fazerLogout()">Terminar Sessão Segura</button>
       </div>
     </div>
@@ -199,6 +210,10 @@
     <button class="nav-item" id="navWu" onclick="navegarPara('wu')"><span class="nav-icon">💸</span>Western Union</button>
     <button class="nav-item" id="navHistory" onclick="navegarPara('history')"><span class="nav-icon">📄</span>Extrato</button>
     <button class="nav-item" id="navProfile" onclick="navegarPara('profile')"><span class="nav-icon">👤</span>Perfil KYC</button>
+  </div>
+
+  <div class="app-footer">
+    Desenvolvido por <strong>@akuenda2026</strong> • Monografia 2026
   </div>
 </div>
 <script src="app.js"></script>
