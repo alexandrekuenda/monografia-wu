@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Banking Angola - Western Union Pro</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="status-bar">
+    <span id="clockDisplay">17:20</span>
+    <span>UNITEL 4G • Angola</span>
+    <div class="status-icons"><span>📶</span><span>🔋 94%</span></div>
+  </div>
+
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <div id="loadingText" style="font-weight:bold; font-size:14px;">A comunicar com o Banco Nacional de Angola...</div>
+    <div style="font-size:11px; opacity:0.75; margin-top:6px;">Encriptação TLS 1.3 • Validação KYC/AML</div>
+  </div>
+
+  <div class="scroll-area">
+    <div id="errorBox" class="error-box hidden"></div>
+    <div id="otpToast" class="otp-notification hidden">
+      <div id="otpToastTitle" style="font-weight:bold; margin-bottom:2px;">📩 Nova Mensagem</div>
+      <div id="otpToastBody">---</div>
+    </div>
+
+    <div id="authScreen">
+      <div class="auth-header">
+        <h2>BANCO DIGITAL ANGOLA</h2>
+        <p>Mobile Banking & Remessas Internacionais BNA</p>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" id="btnAuthLogin" onclick="mudarAuthAba('login')">🔐 Entrar</button>
+        <button class="tab-btn" id="btnAuthReg" onclick="mudarAuthAba('register')">📝 Abrir Conta</button>
+      </div>
+      <div class="section-pad" id="loginForm">
+        <div id="regSuccessBanner" class="success-msg hidden">Conta criada! Entre com as suas credenciais.</div>
+        <label>E-mail de Acesso</label>
+        <input type="email" id="loginEmail" value="ana@banco.ao">
+        <label>Palavra-passe</label>
+        <input type="password" id="loginPass" value="123">
+        <div class="hint">Conta demo: ana@banco.ao / Senha: 123 (ou crie a sua na aba ao lado).</div>
+        <button class="action-btn btn-primary" onclick="fazerLogin()">ENTRAR NO APLICATIVO</button>
+        <button class="action-btn btn-outline" onclick="zerarSistema()">↻ Reiniciar Base de Dados</button>
+      </div>
+      <div class="section-pad hidden" id="registerForm">
+        <label>Nome Completo (Igual ao B.I.)</label>
+        <input type="text" id="regName" placeholder="Ex: João Manuel Baptista">
+        <label>Bilhete de Identidade / NIF (KYC)</label>
+        <input type="text" id="regBi" placeholder="Ex: 005123456LA041">
+        <label>Telemóvel Angola (Para OTP SMS)</label>
+        <input type="tel" id="regPhone" placeholder="Ex: +244 923 456 789">
+        <label>E-mail (Para acesso e OTP E-mail)</label>
+        <input type="email" id="regEmail" placeholder="Ex: joao@banco.ao">
+        <label>Criar Palavra-passe</label>
+        <input type="password" id="regPass" placeholder="Crie uma senha">
+        <button class="action-btn btn-success" onclick="criarConta()">FINALIZAR ABERTURA DE CONTA</button>
+      </div>
+    </div>
+    <div id="appScreen" class="hidden">
+      <div class="app-header">
+        <div class="top-bar">
+          <div class="bank-title">BANCO DIGITAL ANGOLA • BNA</div>
+          <button class="btn-logout" onclick="fazerLogout()">Sair ⏻</button>
+        </div>
+        <div class="user-name" id="holderName">---</div>
+        <div class="virtual-card">
+          <div class="balance-label">Saldo Disponível (Conta à Ordem AOA)</div>
+          <div class="balance-value" id="balanceDisplay">0,00 Kz</div>
+          <div class="iban-text" id="ibanDisplay">IBAN: ---</div>
+        </div>
+      </div>
+
+      <div id="viewHome" class="section-pad">
+        <div class="card">
+          <div class="card-title"><span>📊 Taxas de Câmbio do Dia (AOA)</span><span class="badge-ok">BNA Online</span></div>
+          <div class="rates-grid">
+            <div class="rate-box"><span>🇺🇸 USD</span><strong>915,00 Kz</strong></div>
+            <div class="rate-box"><span>🇪🇺 EUR</span><strong>992,50 Kz</strong></div>
+            <div class="rate-box"><span>🇬🇧 GBP</span><strong>1.165,00 Kz</strong></div>
+          </div>
+        </div>
+        <div class="card" style="background: #ffdd00; border: none;">
+          <div style="font-weight:bold; font-size:15px; color:#000; margin-bottom:4px;">Western Union Direct 24/7</div>
+          <div style="font-size:12px; color:#1e293b; margin-bottom:12px;">Levante transferências internacionais diretamente na sua conta sem ir ao balcão.</div>
+          <button class="action-btn btn-primary" onclick="navegarPara('wu')">ACEDER AO SERVIÇO WESTERN UNION →</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>🛡️ Limite Diário Regulamentar</span></div>
+          <div class="row"><span>Limite Máximo BNA:</span> <strong>5.000,00 USD / dia</strong></div>
+          <div class="row"><span>Utilizado Hoje:</span> <strong id="homeUsedLimit">0,00 USD</strong></div>
+        </div>
+      </div>
+
+      <div id="viewWu" class="hidden">
+        <div class="tabs">
+          <button class="tab-btn active" id="btnTabReceive" onclick="mudarAbaWu('receive')">📥 Receber (Angola)</button>
+          <button class="tab-btn" id="btnTabSend" onclick="mudarAbaWu('send')">📤 Simular Envio</button>
+        </div>
+        <div class="section-pad" id="tabReceive">
+          <div id="stepInquire">
+            <label>Código de Transferência (MTCN - 10 dígitos)</label>
+            <input type="text" id="mtcnInput" maxlength="10" placeholder="Ex: 1234567890">
+            <label>Sobrenome do Beneficiário (Último apelido)</label>
+            <input type="text" id="lastNameInput" placeholder="Ex: Santos">
+            <label>Canal de Envio do Código OTP (2FA)</label>
+            <select id="otpChannelSelect">
+              <option value="sms">📱 Telemóvel por SMS</option>
+              <option value="email">📧 E-mail associado à conta</option>
+            </select>
+            <button class="action-btn btn-primary" onclick="consultarMTCN()">CONSULTAR E ENVIAR OTP</button>
+          </div>
+          <div id="stepConfirm" class="card hidden">
+            <div class="card-title"><span>Resumo & Autorização</span><span class="badge-ok">KYC OK</span></div>
+            <div class="row"><span>Remetente:</span> <strong id="resSender">---</strong></div>
+            <div class="row"><span>País de Origem:</span> <strong id="resCountry">---</strong></div>
+            <div class="row"><span>Valor Enviado:</span> <strong id="resOrigin">---</strong></div>
+            <div class="row"><span>Taxa de Câmbio:</span> <strong id="resRate">---</strong></div>
+            <div class="total-box"><span>Montante Líquido a Creditar</span><strong id="resTotalAOA">0,00 Kz</strong></div>
+            <label id="otpInputLabel">Código OTP recebido:</label>
+            <input type="text" id="otpInput" maxlength="6" placeholder="000000" style="text-align:center; font-size:17px; letter-spacing:4px; font-weight:bold;">
+            <div style="display:flex; gap:8px;">
+              <button class="btn-small" style="flex:1;" onclick="reenviarOtp('sms')">↻ Reenviar SMS</button>
+              <button class="btn-small" style="flex:1;" onclick="reenviarOtp('email')">↻ Reenviar E-mail</button>
+            </div>
+            <button class="action-btn btn-success" onclick="confirmarPagamento('otp')">CONFIRMAR COM CÓDIGO OTP</button>
+            <button class="action-btn btn-bio" onclick="confirmarPagamento('biometric')">👆 AUTORIZAR COM IMPRESSÃO DIGITAL</button>
+            <button class="action-btn btn-outline" onclick="reiniciarRecebimento()">Cancelar</button>
+          </div>
+          <div id="stepReceipt" class="card hidden">
+            <div style="text-align: center; color: #16a34a; margin-bottom: 10px;"><div style="font-size: 26px;">✔</div><strong>Comprovativo de Liquidação Digital</strong></div>
+            <div class="row"><span>ID Transação:</span> <strong id="recTxnId">---</strong></div>
+            <div class="row"><span>Código MTCN:</span> <strong id="recMtcn">---</strong></div>
+            <div class="row"><span>Remetente:</span> <strong id="recSender">---</strong></div>
+            <div class="row"><span>Beneficiário:</span> <strong id="recReceiver">---</strong></div>
+            <div class="row"><span>Autenticação:</span> <strong id="recAuth">---</strong></div>
+            <div class="row"><span>Data/Hora:</span> <strong id="recDate">---</strong></div>
+            <div class="total-box"><span>Valor Creditado em Conta</span><strong id="recAmount">0,00 Kz</strong></div>
+            <button class="action-btn btn-print" onclick="window.print()">IMPRIMIR / GUARDAR PDF</button>
+            <button class="action-btn btn-primary" style="margin-top: 8px;" onclick="reiniciarRecebimento()">NOVA CONSULTA</button>
+          </div>
+        </div>
+        <div class="section-pad hidden" id="tabSend">
+          <div id="sendForm">
+            <label>Nome do Remetente (Exterior)</label>
+            <input type="text" id="sendSenderName" value="Carlos Manuel Silva">
+            <label>País de Origem</label>
+            <select id="sendCountry">
+              <option value="Portugal">Portugal</option><option value="Brasil">Brasil</option><option value="Estados Unidos">Estados Unidos</option><option value="Reino Unido">Reino Unido</option><option value="França">França</option>
+            </select>
+            <label>Nome Completo do Beneficiário em Angola</label>
+            <input type="text" id="sendReceiverName">
+            <div style="display:flex; gap:10px;">
+              <div style="flex:1;"><label>Moeda</label><select id="sendCurrency"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select></div>
+              <div style="flex:2;"><label>Montante a Enviar</label><input type="number" id="sendAmount" value="250"></div>
+            </div>
+            <button class="action-btn btn-wu" onclick="enviarRemessa()">GERAR REMESSA E CÓDIGO MTCN</button>
+          </div>
+          <div id="sendSuccessCard" class="card hidden">
+            <div style="text-align: center; color: #16a34a; font-weight: bold; margin-bottom: 6px;">✔ Remessa Registada!</div>
+            <div class="mtcn-highlight"><span>CÓDIGO MTCN GERADO</span><strong id="generatedMtcn">0000000000</strong></div>
+            <div class="row"><span>Remetente:</span> <strong id="outSender">---</strong></div>
+            <div class="row"><span>Destinatário:</span> <strong id="outReceiver">---</strong></div>
+            <div class="row"><span>Valor:</span> <strong id="outAmount">---</strong></div>
+            <button class="action-btn btn-primary" style="margin-top: 10px;" onclick="usarCodigoParaLevantar()">LEVANTA ESTE CÓDIGO AGORA →</button>
+            <button class="action-btn btn-outline" onclick="novoEnvio()">Simular Outro Envio</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="viewHistory" class="section-pad hidden">
+        <div class="card-title"><span>📄 Extrato de Remessas Digitais</span></div>
+        <div id="fullHistoryList"></div>
+      </div>
+
+      <div id="viewProfile" class="section-pad hidden">
+        <div class="card">
+          <div class="card-title"><span>👤 Dados do Titular & KYC (BNA)</span><span class="badge-ok">Verificado</span></div>
+          <div class="row"><span>Titular:</span> <strong id="profName">---</strong></div>
+          <div class="row"><span>B.I. / NIF:</span> <strong id="profBi">---</strong></div>
+          <div class="row"><span>Telemóvel OTP:</span> <strong id="profPhone">---</strong></div>
+          <div class="row"><span>E-mail:</span> <strong id="profEmail">---</strong></div>
+          <div class="row"><span>IBAN:</span> <strong id="profIban" style="font-size:10.5px;">---</strong></div>
+        </div>
+        <button class="action-btn btn-outline" style="margin-top:15px;" onclick="fazerLogout()">Terminar Sessão Segura</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bottomNav" class="bottom-nav hidden">
+    <button class="nav-item active" id="navHome" onclick="navegarPara('home')"><span class="nav-icon">🏠</span>Início</button>
+    <button class="nav-item" id="navWu" onclick="navegarPara('wu')"><span class="nav-icon">💸</span>Western Union</button>
+    <button class="nav-item" id="navHistory" onclick="navegarPara('history')"><span class="nav-icon">📄</span>Extrato</button>
+    <button class="nav-item" id="navProfile" onclick="navegarPara('profile')"><span class="nav-icon">👤</span>Perfil KYC</button>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
