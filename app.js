@@ -155,6 +155,17 @@ async function zerarSistema() {
   alert('Base de dados reiniciada!');
 }
 
+let adminClicks = 0;
+function cliqueSecretoAdmin() {
+  adminClicks++;
+  if (adminClicks >= 5) {
+    adminClicks = 0;
+    if (confirm('Modo Administrador: Deseja reiniciar a base de dados de demonstracao?')) {
+      zerarSistema();
+    }
+  }
+}
+
 function navegarPara(destino) {
   esconderErro();
   ['viewHome', 'viewWu', 'viewHistory', 'viewProfile'].forEach(function(id) {
