@@ -9,28 +9,33 @@ setInterval(function() {
 }, 1000);
 
 function formatKz(v) {
-  return v.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
+  return Number(v || 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
 }
 
 function simularCarregamento(texto) {
-  document.getElementById('loadingText').innerText = texto;
-  document.getElementById('loadingOverlay').classList.remove('hidden');
+  const overlay = document.getElementById('loadingOverlay');
+  const txt = document.getElementById('loadingText');
+  if (txt) txt.innerText = texto;
+  if (overlay) overlay.classList.remove('hidden');
   return new Promise(function(resolve) {
     setTimeout(function() {
-      document.getElementById('loadingOverlay').classList.add('hidden');
+      if (overlay) overlay.classList.add('hidden');
       resolve();
-    }, 1000);
+    }, 800);
   });
 }
 
 function mostrarErro(msg) {
   const box = document.getElementById('errorBox');
-  box.innerText = msg;
-  box.classList.remove('hidden');
+  if (box) {
+    box.innerText = msg;
+    box.classList.remove('hidden');
+  }
 }
 
 function esconderErro() {
-  document.getElementById('errorBox').classList.add('hidden');
+  const box = document.getElementById('errorBox');
+  if (box) box.classList.add('hidden');
 }
 
 function mostrarNotificacaoOtp(channelLabel, destination, code) {
@@ -41,7 +46,8 @@ function mostrarNotificacaoOtp(channelLabel, destination, code) {
 }
 
 function esconderNotificacaoOtp() {
-  document.getElementById('otpToast').classList.add('hidden');
+  const toast = document.getElementById('otpToast');
+  if (toast) toast.classList.add('hidden');
 }
 
 function mudarAuthAba(aba) {
@@ -71,8 +77,16 @@ async function criarConta() {
   const data = await res.json();
   if (!res.ok) return mostrarErro(data.error);
 
-  document.getElementById('loginEmail').value = payload.email;
-  document.getElementById('loginPass').value = payload.password;
+  // Limpa tanto o formulário de cadastro quanto o de login (por segurança)
+  document.getElementById('regName').value = '';
+  document.getElementById('regBi').value = '';
+  document.getElementById('regPhone').value = '';
+  document.getElementById('regEmail').value = '';
+  document.getElementById('regPass').value = '';
+
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+
   document.getElementById('regSuccessBanner').classList.remove('hidden');
   mudarAuthAba('login');
 }
@@ -94,16 +108,21 @@ async function fazerLogin() {
   currentUser = data.user;
   atualizarDadosTela();
 
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('appScreen').classList.remove('hidden');
-  document.getElementById('bottomNav').classList.remove('hidden');
+  const authScr = document.getElementById('authScreen');
+  const appScr = document.getElementById('appScreen');
+  const navBar = document.getElementById('bottomNav');
+
+  if (authScr) authScr.classList.add('hidden');
+  if (appScr) appScr.classList.remove('hidden');
+  if (navBar) navBar.classList.remove('hidden');
   navegarPara('home');
 }
+
 function atualizarDadosTela() {
   document.getElementById('holderName').innerText = currentUser.fullName;
   document.getElementById('ibanDisplay').innerText = 'IBAN: ' + currentUser.iban;
   document.getElementById('balanceDisplay').innerText = formatKz(currentUser.balanceAOA);
-  document.getElementById('homeUsedLimit').innerText = (currentUser.usedLimitUSD || 0).toFixed(2) + ' USD';
+  document.getElementById('homeUsedLimit').innerText = Number(currentUser.usedLimitUSD || 0).toFixed(2) + ' USD';
   document.getElementById('sendReceiverName').value = currentUser.fullName;
 
   document.getElementById('profName').innerText = currentUser.fullName;
@@ -121,11 +140,14 @@ function fazerLogout() {
   esconderErro();
   esconderNotificacaoOtp();
   currentUser = null;
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
   document.getElementById('regSuccessBanner').classList.add('hidden');
   document.getElementById('appScreen').classList.add('hidden');
   document.getElementById('bottomNav').classList.add('hidden');
   document.getElementById('authScreen').classList.remove('hidden');
 }
+
 
 async function zerarSistema() {
   esconderErro();
