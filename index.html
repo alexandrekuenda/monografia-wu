@@ -29,7 +29,7 @@
     </div>
 
     <div id="authScreen">
-      <div class="auth-header">
+      <div class="auth-header" onclick="cliqueSecretoAdmin()">
         <h2>BANCO DIGITAL ANGOLA</h2>
         <p>Mobile Banking & Remessas Internacionais BNA</p>
         <p style="margin-top: 8px; font-size: 11px; color: #fde047; font-weight: bold;">
@@ -49,7 +49,6 @@
         <label>Palavra-passe</label>
         <input type="password" id="loginPass" placeholder="Digite a sua palavra-passe">
         <button class="action-btn btn-primary" onclick="fazerLogin()">ENTRAR NO APLICATIVO</button>
-        <button class="action-btn btn-outline" onclick="zerarSistema()">↻ Reiniciar Base de Dados</button>
       </div>
 
       <div class="section-pad hidden" id="registerForm">
